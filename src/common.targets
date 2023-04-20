@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Author>Platonymous</Author>
+		<Platforms>AnyCPU</Platforms>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<TargetFramework>net45</TargetFramework>
+		<OutputPath>bin\Release\</OutputPath>
+		<GamePath>C:\Program Files (x86)\Steam\steamapps\common\Let's Build a Zoo</GamePath>
+	</PropertyGroup>
+
+	<Import Project="$(SolutionDir)\private.targets" />
+</Project>

@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Platonymous",
+  "classifications": [ "Library", "Mod", "LBAZ" ],
+  "identity": "Platonymous.LBAM.BasicModTemplate",
+  "name": "LBAZ Basic Mod Template",
+  "description": "Basic template for Mods for Lets Build A Zoo using LBAM Mod Api",
+  "shortName": "lbazmod",
+  "sourceName": "ModTemplate",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "symbols": {
+    "Author": {
+      "type": "parameter",
+      "description": "Name of the author",
+      "datatype": "string",
+      "defaultValue": "Author",
+      "replaces": "{AUTHOR}"
+    },
+    "Description": {
+      "type": "parameter",
+      "description": "Description of the Mod",
+      "datatype": "string",
+      "defaultValue": "Description",
+      "replaces": "{DESCRIPTION}"
+    },
+    "GamePath": {
+      "type": "parameter",
+      "description": "Path to the games folder",
+      "datatype": "string",
+      "defaultValue": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Let's Build a Zoo",
+      "replaces": "{GAMEPATH}"
+    }
+  }
+}

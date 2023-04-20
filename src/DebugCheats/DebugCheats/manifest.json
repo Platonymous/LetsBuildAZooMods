@@ -1,0 +1,9 @@
+﻿{
+  "Id": "Platonymous.DebugCheats",
+  "Name": "DebugCheats",
+  "Author": "Platonymous",
+  "Version": "1.0.0",
+  "Description": "Mod that lets you enable certain cheats",
+  "EntryFile": "DebugCheats.dll",
+  "MinimumApiVersion": "1.0.0"
+}

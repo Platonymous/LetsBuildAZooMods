@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AssemblyName>0ModApi</AssemblyName>
+		<RootNamespace>ModLoader</RootNamespace>
+		<Version>1.1.0</Version>
+		<OutputType>Library</OutputType>
+	</PropertyGroup>
+  <Import Project="$(SolutionDir)\common.targets" />
+
+	<ItemGroup>
+	  <PackageReference Include="Lib.Harmony" Version="2.2.1" />
+	</ItemGroup>
+  
+	<ItemGroup>
+	  <Reference Include="MonoGame">
+	    <HintPath>$(GamePath)\MonoGame.Framework.dll</HintPath>
+		  <Private>False</Private>
+	  </Reference>
+		<Reference Include="LetsBuildAZoo">
+			<HintPath>$(GamePath)\LetsBuildAZoo.exe</HintPath>
+			<Private>False</Private>
+		</Reference>
+    <Reference Include="Newtonsoft.Json">
+			<HintPath>$(GamePath)\Newtonsoft.Json.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<ItemGroup>
+			<AllFiles Include="$(TargetDir)**\*.dll" Exclude="$(TargetDir)\AnalyticsWrapper.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(AllFiles)" DestinationFolder="$(GamePath)\%(RecursiveDir)"></Copy>
+		<Copy SourceFiles="@(AllFiles)" DestinationFolder="$(SolutionDir)_dev\modapidata\%(RecursiveDir)"></Copy>
+		<ZipDirectory Overwrite="true" SourceDirectory="$(SolutionDir)\_dev\modapidata" DestinationFile="$(SolutionDir)\..\releases\LBAM_$(Version).zip" />
+		<Delete Files="$(SolutionDir)\_dev\modapidata.zip" />
+
+	</Target>
+
+
+</Project>

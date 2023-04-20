@@ -1,0 +1,9 @@
+﻿{
+  "Id": "{AUTHOR}.ModTemplate",
+  "Name": "ModTemplate",
+  "Author": "{AUTHOR}",
+  "Version": "1.0.0",
+  "Description": "{DESCRIPTION}",
+  "EntryFile": "ModTemplate.dll",
+  "MinimumApiVersion": "1.0.0"
+}

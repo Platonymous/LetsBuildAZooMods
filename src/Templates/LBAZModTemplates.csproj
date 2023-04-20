@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageVersion>1.0.0</PackageVersion>
+    <PackageId>Platonymous.LBAM.ModTemplates</PackageId>
+    <Title>Lets Build a Zoo Modding Templates</Title>
+    <Authors>Platonymous</Authors>
+    <Description>Templates for Mods for Lets Build A Zoo using LBAM Mod Api</Description>
+    <PackageTags>dotnet-new;templates;modding;lbaz;letsbuildazoo;lbam</PackageTags>
+    <TargetFramework>net45</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <AllFiles Include="$(TargetDir)..\**\*.nupkg" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AllFiles)" DestinationFolder="$(SolutionDir)\..\releases\"></Copy>
+  </Target>
+</Project>

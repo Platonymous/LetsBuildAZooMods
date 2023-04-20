@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AssemblyName>ModTemplate</AssemblyName>
+		<RootNamespace>ModTemplate</RootNamespace>
+    <Version>1.0.0</Version>
+    <Author>{AUTHOR}</Author>
+    <Platforms>AnyCPU</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TargetFramework>net45</TargetFramework>
+    <OutputPath>bin\Release\</OutputPath>
+    <OutputType>library</OutputType>
+    <GamePath>{GAMEPATH}</GamePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Update="manifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <Reference Include="0ModApi">
+      <HintPath>$(GamePath)\0ModApi.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="LetsBuildAZoo">
+      <HintPath>$(GamePath)\LetsBuildAZoo.exe</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoGame">
+      <HintPath>$(GamePath)\MonoGame.Framework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Harmony">
+      <HintPath>$(GamePath)\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <AllFiles Include="$(TargetDir)**\*.*" Exclude="$(TargetDir)**\*.pdb" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AllFiles)" DestinationFolder="$(GamePath)\Mods\$(TargetName)\%(RecursiveDir)"></Copy>
+  </Target>
+</Project>

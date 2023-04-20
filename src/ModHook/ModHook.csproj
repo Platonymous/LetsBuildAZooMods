@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AssemblyName>AnalyticsWrapper</AssemblyName>
+		<RootNamespace>AnalyticsWrapper</RootNamespace>
+		<Version>1.0.0</Version>
+    <LangVersion>latest</LangVersion>
+		<OutputType>Library</OutputType>
+	</PropertyGroup>
+	<Import Project="$(SolutionDir)\common.targets" />
+
+  <ItemGroup>
+    <Reference Include="MonoGame">
+      <HintPath>$(GamePath)\MonoGame.Framework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ModApi">
+      <HintPath>$(GamePath)\0ModApi.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Harmony">
+      <HintPath>$(GamePath)\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Spring.Coms">
+      <HintPath>$(GamePath)\Spring.Comms.2.0.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+
+    
+  </ItemGroup>
+  
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<ItemGroup>
+			<DllFile Include="$(TargetDir)\AnalyticsWrapper.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(DllFile)" DestinationFiles="$(GamePath)\AnalyticsWrapper.dll"></Copy>
+		<Copy SourceFiles="@(DllFile)" DestinationFiles="$(SolutionDir)\_dev\modapidata\AnalyticsWrapper.dll"></Copy>
+
+	</Target>
+
+</Project>
