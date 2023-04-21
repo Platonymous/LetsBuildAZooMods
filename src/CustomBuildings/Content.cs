@@ -23,11 +23,13 @@ namespace CustomBuildings
 
         public string Id { get; set; } = "";
 
-        public string Category { get; set; } = "Floors";
+        public int BasicBuilding { get; set; } = -1;
 
-        public string BuildingType { get; set; } = "Floor";
+        public string Category { get; set; } = "Decorative";
 
-        public int Rotations { get; set; } = 4;
+        public string BuildingType { get; set; } = "Building";
+
+        public int Rotations { get; set; } = 1;
 
         public bool IsVolumeFloor { get; set; } = false;
 
@@ -40,8 +42,6 @@ namespace CustomBuildings
         public string Name { get; set; } = "";
 
         public string Template { get; set; } = "";
-
-        public string Description { get; set; } = "";
 
         public int TileWidth = 16;
 

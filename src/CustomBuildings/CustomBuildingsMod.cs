@@ -67,11 +67,6 @@ namespace CustomBuildings
             HarmonyInstance.Patch(
                 original: AccessTools.PropertyGetter(Type.GetType("TinyZoo.Tile_Data.TileStats, LetsBuildAZoo"), "Name"),
                 prefix: new HarmonyMethod(this.GetType(), nameof(TileStatsName)));
-
-            HarmonyInstance.Patch(
-                original: AccessTools.PropertyGetter(Type.GetType("TinyZoo.Tile_Data.TileStats, LetsBuildAZoo"), "Description"),
-                prefix: new HarmonyMethod(this.GetType(), nameof(TileStatsDescription)));
-
             HarmonyInstance.Patch(
                 original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "IsThisFloorAVolumeFloor"),
                 postfix: new HarmonyMethod(this.GetType(), nameof(IsThisFloorAVolumeFloor)));
@@ -93,8 +88,22 @@ namespace CustomBuildings
                original: AccessTools.Constructor(Type.GetType("TinyZoo.Z_PenInfo.MainBar.SimpleBuildingRenderer, LetsBuildAZoo"), new Type[]{ typeof(TILETYPE), typeof(int)}),
                postfix: new HarmonyMethod(this.GetType(), nameof(SimpleBuildingRenderer)));
 
+
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Z_OverWorld.SpawnAnimations.CascadeSpawner, LetsBuildAZoo"), "DoCascadeForBuildingorTree"),
+               prefix: new HarmonyMethod(this.GetType(), nameof(DoCascadeForBuildingorTree)));
+
+
+            //DoCascadeForBuildingorTree
+
             //
             LoadContentPacks(helper.GetContentPacks());
+        }
+
+
+        internal static bool DoCascadeForBuildingorTree(object tilerenderer)
+        {
+            return tilerenderer != null;
         }
 
         public static void SimpleBuildingRenderer(object __instance, TILETYPE tiletype, int ROtation = 0)
@@ -103,8 +112,11 @@ namespace CustomBuildings
             {
                 if (Reflection.GetFieldValue<GameObject>("TopLayer", __instance) is GameObject topLayer)
                 {
-                    topLayer.DrawOrigin.X = 0;
-                    topLayer.DrawOrigin.Y = topLayer.DrawOrigin.Y / 2;
+                    if (topLayer != null && topLayer.DrawOrigin != null)
+                    {
+                        topLayer.DrawOrigin.X = 0f;
+                        topLayer.DrawOrigin.Y = topLayer.DrawOrigin.Y / 2f;
+                    }
                 }
             }
 
@@ -163,19 +175,6 @@ namespace CustomBuildings
             return true;
         }
 
-        public static bool TileStatsDescription(object __instance, ref string __result)
-        {
-            int id = (int)Reflection.GetFieldValue<StringID>("__Description", __instance);
-
-            if (TryGetBuildingDefinitionFromTileId(id, out BuildingDefinition definition))
-            {
-                __result = definition.Description;
-                return false;
-            }
-
-            return true;
-        }
-
         public void LoadContentPacks(IEnumerable<IModHelper> packs)
         {
             foreach(var pack in packs)
@@ -208,11 +207,10 @@ namespace CustomBuildings
 
         internal static bool GetRenderComponent(TILETYPE tiletype,object parent,bool IsConstructionPreview,bool IsAChild, ref object __result)
         {
-            int last = (int)TILETYPE.Count;
-            int current = (int)tiletype;
-            if (current > last)
+            int tileid = (int)tiletype;
+            if (Buildings.FirstOrDefault(b => b.GetTileId() == tileid) is BuildingDefinition bd)
             {
-                __result = AccessTools.Method(Type.GetType("TinyZoo.OverWorld.OverWorldEnv.WallsAndFloors.Components.ComponentData, LetsBuildAZoo"), "GetRenderComponent").Invoke(null, new object[] { TILETYPE.Floor_GreenGrass, parent, IsConstructionPreview, IsAChild });
+                __result = null;
                 return false;
             }
 
@@ -298,11 +296,11 @@ namespace CustomBuildings
                     }
 
                     Reflection.SetFieldValue("__Name", __result, (StringID)definition.GetTileId());
-                    Reflection.SetFieldValue("__Description", __result, (StringID)definition.GetTileId());
+                    Reflection.SetFieldValue("__Description", __result, (StringID)StringID.Placeholder);
                 }
                 else
                 {
-                    __result = Activator.CreateInstance(Type.GetType("TinyZoo.Tile_Data.TileStats, LetsBuildAZoo"), new object[] { (StringID)definition.GetTileId(), (StringID)definition.GetTileId() });
+                    __result = Activator.CreateInstance(Type.GetType("TinyZoo.Tile_Data.TileStats, LetsBuildAZoo"), new object[] { (StringID)definition.GetTileId(), (StringID)StringID.Placeholder });
                 }
 
                 foreach (var prod in definition.Productions)
@@ -384,13 +382,23 @@ namespace CustomBuildings
 
         internal static void AddRotations(object tiledata, BuildingDefinition definition, int maxrotations)
         {
-            if(maxrotations > 1)
-            for(int i = 1; i < maxrotations; i++)
-                AddRotation(tiledata, new Rectangle(definition.TileWidth * i, 0, definition.TileWidth, definition.TileHeight), i);
+            if (maxrotations > 1)
+                for (int i = 1; i < maxrotations; i++)
+                {
+                    if(definition.BasicBuilding == -1)
+                        AddRotation(tiledata, new Rectangle(definition.TileWidth * i, 0, definition.TileWidth, definition.TileHeight), i);
+                    else
+                        AddRotation(tiledata, new Rectangle(definition.TileWidth * i, definition.TileHeight - definition.BasicBuilding, definition.TileWidth, definition.BasicBuilding), i);
+                }
 
-            if (definition.HasFront)
+            if (definition.HasFront || definition.BasicBuilding >= 0)
+            {
                 for (int i = 0; i < maxrotations; i++)
-                    AddBuilding(tiledata, new Rectangle(definition.FrontTileWidth * i, definition.TileHeight, definition.FrontTileWidth, definition.FrontTileHeight), i, maxrotations, (definition.FrontTileWidth / 2f) + 8f, definition.FrontTileHeight - definition.TileHeight / 2);
+                    if (definition.BasicBuilding == -1)
+                        AddBuilding(tiledata, new Rectangle(definition.FrontTileWidth * i, definition.TileHeight, definition.FrontTileWidth, definition.FrontTileHeight), i, maxrotations, (definition.FrontTileWidth / 2f) + 8f, definition.FrontTileHeight - definition.TileHeight / 2);
+                    else
+                        AddBuilding(tiledata, new Rectangle(definition.FrontTileWidth * i, 0, definition.FrontTileWidth, definition.FrontTileHeight), i, maxrotations, (definition.FrontTileWidth / 2f) + 8f, definition.FrontTileHeight - definition.TileHeight / 2);
+            }
         }
 
         internal static bool GetTileInfo(TILETYPE tiletype, ref object __result)
@@ -417,7 +425,19 @@ namespace CustomBuildings
                 Texture2D tex = definition.GetPack().Content.LoadContent<Texture2D>(definition.Texture);
                 object texture = GetNewTextureHolder(tex);
 
-                __result = GetNewTileInfo(new Rectangle(0, 0, definition.TileWidth, definition.TileHeight), GetBuildingType(definition.BuildingType), false, 1, 0, texture, false, definition.Rotations, null);
+                if (definition.BasicBuilding >= 0)
+                {
+                    definition.TileHeight = definition.BasicBuilding;
+                    definition.TileWidth = tex.Width / definition.Rotations;
+                    definition.FrontTileHeight = tex.Height - definition.BasicBuilding;
+                    definition.FrontTileWidth = tex.Width;
+                    definition.BuildingType = "Building";
+                }
+
+                if (definition.BasicBuilding == -1)
+                    __result = GetNewTileInfo(new Rectangle(0, 0, definition.TileWidth, definition.TileHeight), GetBuildingType(definition.BuildingType), false, 1, 0, texture, false, definition.Rotations, null);
+                else
+                    __result = GetNewTileInfo(new Rectangle(0, definition.FrontTileHeight, definition.TileWidth, definition.TileHeight), GetBuildingType(definition.BuildingType), false, 1, 0, texture, false, definition.Rotations, null);
 
                 if (!definition.IsVolumeFloor)
                 {
