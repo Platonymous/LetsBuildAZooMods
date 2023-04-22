@@ -25,6 +25,8 @@ namespace CustomBuildings
 
         public int BasicBuilding { get; set; } = -1;
 
+        public bool AllowEnclosure { get; set; } = true;
+
         public string Category { get; set; } = "Decorative";
 
         public string BuildingType { get; set; } = "Building";

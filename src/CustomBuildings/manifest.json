@@ -2,7 +2,7 @@
   "Id": "Platonymous.CustomBuildings",
   "Name": "CustomBuildings",
   "Author": "Platonymous",
-  "Version": "1.1.0",
+  "Version": "1.1.2",
   "Description": "Let's other mods add custom Buildings, Flooring etc. via content pack",
   "EntryFile": "CustomBuildings.dll",
   "MinimumApiVersion": "1.1.0"

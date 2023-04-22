@@ -24,6 +24,8 @@ namespace CustomBuildings
 
         public const int MinimumID = 1000000;
 
+        public static bool LoadedEntries = false;
+
         public void ModEntry(IModHelper helper)
         {
             Helper = helper;
@@ -32,17 +34,15 @@ namespace CustomBuildings
 
             HarmonyInstance.Patch(
                 original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.CategoryData, LetsBuildAZoo"), "GetEntriesInThisCategory"),
-                postfix: new HarmonyMethod(this.GetType(), nameof(GetEntriesInThisCategory)));
-
-
-            HarmonyInstance.Patch(
-                original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "GetTileInfo"),
-                prefix: new HarmonyMethod(this.GetType(), nameof(GetTileInfo)));
-
+                prefix: new HarmonyMethod(this.GetType(), nameof(GetEntriesInThisCategory)));
 
             HarmonyInstance.Patch(
                 original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "GetTileStats"),
                 prefix: new HarmonyMethod(this.GetType(), nameof(GetTileStats)));
+
+            HarmonyInstance.Patch(
+                original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "GetTileInfo"),
+                prefix: new HarmonyMethod(this.GetType(), nameof(GetTileInfo)));
 
             HarmonyInstance.Patch(
                 original: AccessTools.Method(Type.GetType("TinyZoo.Blance.BlingDingCosts, LetsBuildAZoo"), "GetCost"),
@@ -84,8 +84,14 @@ namespace CustomBuildings
                postfix: new HarmonyMethod(this.GetType(), nameof(IsThisAPartialFloor)));
 
 
+
             HarmonyInstance.Patch(
-               original: AccessTools.Constructor(Type.GetType("TinyZoo.Z_PenInfo.MainBar.SimpleBuildingRenderer, LetsBuildAZoo"), new Type[]{ typeof(TILETYPE), typeof(int)}),
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "IsThisAPenDecoration"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(IsThisAPenDecoration)));
+
+
+            HarmonyInstance.Patch(
+               original: AccessTools.Constructor(Type.GetType("TinyZoo.Z_PenInfo.MainBar.SimpleBuildingRenderer, LetsBuildAZoo"), new Type[] { typeof(TILETYPE), typeof(int) }),
                postfix: new HarmonyMethod(this.GetType(), nameof(SimpleBuildingRenderer)));
 
 
@@ -93,15 +99,190 @@ namespace CustomBuildings
                original: AccessTools.Method(Type.GetType("TinyZoo.Z_OverWorld.SpawnAnimations.CascadeSpawner, LetsBuildAZoo"), "DoCascadeForBuildingorTree"),
                prefix: new HarmonyMethod(this.GetType(), nameof(DoCascadeForBuildingorTree)));
 
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.CategoryData, LetsBuildAZoo"), "GetCategoryDescription", new Type[] { typeof(TILETYPE) }),
+               prefix: new HarmonyMethod(this.GetType(), nameof(GetCategoryDescription)));
 
-            //DoCascadeForBuildingorTree
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.MainGameCats, LetsBuildAZoo"), "SetUpFloors"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpFloors)));
 
-            //
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.SandBoxCats, LetsBuildAZoo"), "SetUpFloors"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpFloors)));
+
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.DinosaurCats, LetsBuildAZoo"), "SetUpFloors"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpFloors)));
+
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.AquariumCats, LetsBuildAZoo"), "SetUpFloors"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpFloors)));
+
+
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.MainGameCats, LetsBuildAZoo"), "SetUpDecoratives"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpDecoratives)));
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.DinosaurCats, LetsBuildAZoo"), "SetUpDecoratives"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpDecoratives)));
+
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.SandBoxCats, LetsBuildAZoo"), "SetUpDecoratives"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpDecoratives2)));
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.AquariumCats, LetsBuildAZoo"), "SetUpDecoratives"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpDecoratives)));
+
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.MainGameCats, LetsBuildAZoo"), "SetUpNature"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpNature)));
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.SandBoxCats, LetsBuildAZoo"), "SetUpNature"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpNature)));
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.DinosaurCats, LetsBuildAZoo"), "SetUpNature"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpNature)));
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.AquariumCats, LetsBuildAZoo"), "SetUpNature"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetUpNature)));
+
+
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.MainGameCats, LetsBuildAZoo"), "SetPenDeco"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetPenDeco)));
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.SandBoxCats, LetsBuildAZoo"), "SetPenDeco"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetPenDeco)));
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.DinosaurCats, LetsBuildAZoo"), "SetPenDeco"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetPenDeco)));
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.Tile_Data.ScenarioCategories.AquariumCats, LetsBuildAZoo"), "SetPenDeco"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(SetPenDeco)));
+
+
+            foreach (ConstructorInfo constructor in AccessTools.GetDeclaredConstructors(Type.GetType("TinyZoo.PlayerDir.Layout.LayoutEntry, LetsBuildAZoo")))
+                HarmonyInstance.Patch(
+               original: constructor,
+               postfix: new HarmonyMethod(this.GetType(), nameof(LayoutEntry)));
+
+            HarmonyInstance.Patch(
+               original: AccessTools.Method(Type.GetType("TinyZoo.OverWorld.OverWorldEnv.WallsAndFloors.WallsAndFloorsManager, LetsBuildAZoo"), "VallidateAgainstLayout"),
+               postfix: new HarmonyMethod(this.GetType(), nameof(VallidateAgainstLayout)));
+
+
+
             LoadContentPacks(helper.GetContentPacks());
         }
 
+        public static void VallidateAgainstLayout(object __instance)
+        {
+            Array tilesasarray = Reflection.GetFieldValue<Array>("tilesasarray", __instance);
+            int width = tilesasarray.GetLength(0);
+            int height = tilesasarray.GetLength(1);
+            for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
+                    if (tilesasarray.GetValue(x, y) is object tvalue && tvalue != null && Reflection.GetFieldValue<TILETYPE>("tiletypeonconstruct", tvalue) is TILETYPE tiletype)
+                        if (tiletype == TILETYPE.None || ((int)tiletype > (int)TILETYPE.Count && !TryGetBuildingDefinitionFromTileId((int)tiletype, out BuildingDefinition bd)))
+                            tilesasarray.SetValue(null, x, y);
+            Reflection.SetFieldValue("tilesasarray", __instance, tilesasarray);
 
-        internal static bool DoCascadeForBuildingorTree(object tilerenderer)
+            Array FloorTilesArray = Reflection.GetFieldValue<Array>("FloorTilesArray", __instance);
+            width = FloorTilesArray.GetLength(0);
+            height = FloorTilesArray.GetLength(1);
+            for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
+                    if (FloorTilesArray.GetValue(x, y) is object tvalue && tvalue != null && Reflection.GetFieldValue<TILETYPE>("tiletypeonconstruct", tvalue) is TILETYPE tiletype)
+                        if (tiletype == TILETYPE.None || ((int)tiletype > (int)TILETYPE.Count && !TryGetBuildingDefinitionFromTileId((int)tiletype, out BuildingDefinition bd)))
+                            FloorTilesArray.SetValue(null, x, y);
+            Reflection.SetFieldValue("FloorTilesArray", __instance, FloorTilesArray);
+
+            Array UnderFloorTilesArray = Reflection.GetFieldValue<Array>("UnderFloorTilesArray", __instance);
+            width = UnderFloorTilesArray.GetLength(0);
+            height = UnderFloorTilesArray.GetLength(1);
+            for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
+                    if (UnderFloorTilesArray.GetValue(x, y) is object tvalue && tvalue != null && Reflection.GetFieldValue<TILETYPE>("tiletypeonconstruct", tvalue) is TILETYPE tiletype)
+                        if (tiletype == TILETYPE.None || ((int)tiletype > (int)TILETYPE.Count && !TryGetBuildingDefinitionFromTileId((int)tiletype, out BuildingDefinition bd)))
+                            UnderFloorTilesArray.SetValue(null, x, y);
+            Reflection.SetFieldValue("UnderFloorTilesArray", __instance, UnderFloorTilesArray);
+        }
+
+        public static void LayoutEntry(object __instance)
+        {
+            TILETYPE tiletype = Reflection.GetFieldValue<TILETYPE>("tiletype", __instance);
+            if ((int)tiletype > (int)TILETYPE.Count && !TryGetBuildingDefinitionFromTileId((int)tiletype, out BuildingDefinition bd))
+                Reflection.SetFieldValue("tiletype", __instance, TILETYPE.None);
+        }
+
+        public static bool GetTileInfo(ref TILETYPE tiletype, ref object __result)
+        {
+            if ((int)tiletype > (int)TILETYPE.Count && !TryGetBuildingDefinitionFromTileId((int)tiletype, out BuildingDefinition bdx))
+                tiletype = TILETYPE.None;
+            else if (TryGetBuildingDefinitionFromTileId((int)tiletype, out BuildingDefinition bd))
+            {
+                __result = RegisterTileInfo(bd);
+                return false;
+            }
+
+            return true;
+        }
+
+        public static void SetPenDeco(ref List<TILETYPE> _Pen_Deco)
+        {
+            foreach (var bd in Buildings.Where(b => b.Category != "Floors" && b.AllowEnclosure))
+                if (!_Pen_Deco.Contains((TILETYPE)bd.GetTileId()))
+                    _Pen_Deco.Add((TILETYPE)bd.GetTileId());
+        }
+
+        public static void SetUpDecoratives(ref List<TILETYPE> _Decorative)
+        {
+            foreach (var bd in Buildings.Where(b => b.Category == "Decorative"))
+                if (!_Decorative.Contains((TILETYPE)bd.GetTileId()))
+                    _Decorative.Add((TILETYPE)bd.GetTileId());
+        }
+        public static void SetUpDecoratives2(ref List<TILETYPE> _Decoratives)
+        {
+            foreach (var bd in Buildings.Where(b => b.Category == "Decorative"))
+                if (!_Decoratives.Contains((TILETYPE)bd.GetTileId()))
+                    _Decoratives.Add((TILETYPE)bd.GetTileId());
+        }
+
+        public static void SetUpFloors(ref List<TILETYPE> _Floors)
+        {
+            foreach (var bd in Buildings.Where(b => b.Category == "Floors"))
+                if (!_Floors.Contains((TILETYPE)bd.GetTileId()))
+                    _Floors.Add((TILETYPE)bd.GetTileId());
+
+        }
+
+        public static void SetUpNature(ref List<TILETYPE> _Nature)
+        {
+            foreach (var bd in Buildings.Where(b => b.Category == "Nature"))
+                if (!_Nature.Contains((TILETYPE)bd.GetTileId()))
+                    _Nature.Add((TILETYPE)bd.GetTileId());
+
+        }
+
+        public static bool GetCategoryDescription(TILETYPE tiletype, ref string __result)
+        {
+            if (TryGetBuildingDefinitionFromTileId((int)tiletype, out BuildingDefinition bd))
+            {
+                if (bd.Category == "Floors")
+                    __result = SEngine.Localization.Localization.GetText(409);
+                else if (bd.Category == "Nature")
+                    __result = SEngine.Localization.Localization.GetText(411);
+                else
+                    __result = SEngine.Localization.Localization.GetText(391);
+
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool DoCascadeForBuildingorTree(object tilerenderer)
         {
             return tilerenderer != null;
         }
@@ -122,7 +303,15 @@ namespace CustomBuildings
 
         }
 
+        
 
+        public static void IsThisAPenDecoration(TILETYPE tiletype, ref bool __result)
+        {
+            if (TryGetBuildingDefinitionFromTileId((int)tiletype, out BuildingDefinition bd))
+            {
+                __result = GetBuildingType(bd.BuildingType) != 0 && bd.AllowEnclosure;
+            }
+        }
 
         public static void IsThisAPartialFloor(object entry, ref bool __result)
         {
@@ -157,14 +346,14 @@ namespace CustomBuildings
             if (__instance is HashSet<TILETYPE> hs && item is TILETYPE tt)
             {
                 foreach (var definition in Buildings.Where(b => b.HasThisTemplate(tt)))
-                    if(!hs.Contains((TILETYPE)definition.GetTileId()))
+                    if (!hs.Contains((TILETYPE)definition.GetTileId()))
                         hs.Add((TILETYPE)definition.GetTileId());
             }
         }
 
         public static bool TileStatsName(object __instance, ref string __result)
         {
-            int id = (int) Reflection.GetFieldValue<StringID>("__Name", __instance);
+            int id = (int)Reflection.GetFieldValue<StringID>("__Name", __instance);
 
             if (TryGetBuildingDefinitionFromTileId(id, out BuildingDefinition definition))
             {
@@ -177,12 +366,74 @@ namespace CustomBuildings
 
         public void LoadContentPacks(IEnumerable<IModHelper> packs)
         {
-            foreach(var pack in packs)
+            foreach (var pack in packs)
             {
                 var content = pack.Content.LoadJson<Content>("content.json");
                 foreach (var building in content.Buildings)
                     Buildings.Add(ReserveID(building, pack));
             }
+        }
+
+        public static void RegisterTileInfos()
+        {
+            Array tinfoCheck = (Array)AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").GetValue(null);
+
+            if (tinfoCheck == null || tinfoCheck.Length < MinimumID * 2)
+            {
+                var newArray = Array.CreateInstance(Type.GetType("TinyZoo.Tile_Data.TileInfo, LetsBuildAZoo"), MinimumID * 2);
+
+                if (tinfoCheck != null)
+                    for (int i = 0; i < tinfoCheck.Length; i++)
+                        newArray.SetValue(tinfoCheck.GetValue(i), i);
+
+                AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").SetValue(null, newArray);
+            }
+
+            foreach (var definition in Buildings)
+            {
+                _ = RegisterTileInfo(definition);
+            }
+        }
+
+        public static object RegisterTileInfo(BuildingDefinition definition)
+        {
+            object thisinfo = null;
+            Array tinfo = (Array)AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").GetValue(null);
+
+            Texture2D tex = definition.GetPack().Content.LoadContent<Texture2D>(definition.Texture);
+            object texture = GetNewTextureHolder(tex);
+
+            if (definition.BasicBuilding >= 0)
+            {
+                definition.TileHeight = definition.BasicBuilding;
+                definition.TileWidth = tex.Width / definition.Rotations;
+                definition.FrontTileHeight = tex.Height - definition.BasicBuilding;
+                definition.FrontTileWidth = tex.Width;
+                definition.BuildingType = "Building";
+            }
+
+            if (definition.BasicBuilding == -1)
+                thisinfo = GetNewTileInfo(new Rectangle(0, 0, definition.TileWidth, definition.TileHeight), GetBuildingType(definition.BuildingType), false, 1, 0, texture, false, definition.Rotations, null);
+            else
+                thisinfo = GetNewTileInfo(new Rectangle(0, definition.FrontTileHeight, definition.TileWidth, definition.TileHeight), GetBuildingType(definition.BuildingType), false, 1, 0, texture, false, definition.Rotations, null);
+
+            if (!definition.IsVolumeFloor)
+            {
+                AddRotations(thisinfo, definition, definition.Rotations);
+            }
+
+            tinfo.SetValue(thisinfo, definition.GetTileId());
+            AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").SetValue(null, tinfo);
+
+            if (definition.IsVolumeFloor)
+            {
+                SetFloorVolumeTileData((TILETYPE)definition.GetTileId(), texture);
+                tinfo = (Array)AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").GetValue(null);
+                AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").SetValue(null, tinfo);
+                thisinfo = tinfo.GetValue(definition.GetTileId());
+            }
+
+            return thisinfo;
         }
 
         public BuildingDefinition ReserveID(BuildingDefinition d, IModHelper pack)
@@ -197,7 +448,7 @@ namespace CustomBuildings
                 Config.LastId += 1;
                 Config.Reserved.Add(new ReservedIds() { ModId = d.Id, TileId = Config.LastId });
                 Helper.Config.SaveConfig(Config);
-                id =  Config.LastId;
+                id = Config.LastId;
             }
 
             d.SetTileId(id);
@@ -205,7 +456,7 @@ namespace CustomBuildings
             return d;
         }
 
-        internal static bool GetRenderComponent(TILETYPE tiletype,object parent,bool IsConstructionPreview,bool IsAChild, ref object __result)
+        internal static bool GetRenderComponent(TILETYPE tiletype, object parent, bool IsConstructionPreview, bool IsAChild, ref object __result)
         {
             int tileid = (int)tiletype;
             if (Buildings.FirstOrDefault(b => b.GetTileId() == tileid) is BuildingDefinition bd)
@@ -230,7 +481,7 @@ namespace CustomBuildings
 
         internal static bool TryGetBuildingDefinitionFromTileId(int tileid, out BuildingDefinition definition)
         {
-            if(Buildings.FirstOrDefault(b => b.GetTileId() == tileid) is BuildingDefinition bd)
+            if (Buildings.FirstOrDefault(b => b.GetTileId() == tileid) is BuildingDefinition bd)
             {
                 definition = bd;
                 return true;
@@ -249,7 +500,7 @@ namespace CustomBuildings
                 if (definition.TryGetTemplate(out TILETYPE tt))
                     __result = (int)AccessTools.Method(Type.GetType("TinyZoo.Blance.BlingDingCosts, LetsBuildAZoo"), "GetCost").Invoke(null, new object[] { tt });
 
-                if(definition.Cost != -1)
+                if (definition.Cost != -1)
                     __result = definition.Cost;
                 return false;
             }
@@ -309,7 +560,7 @@ namespace CustomBuildings
                 foreach (var prod in definition.Consumptions)
                     AccessTools.Method(__result.GetType(), "SetConsumption").Invoke(__result, new object[] { prod.Type, prod.Volume });
 
-               
+
                 tstats.SetValue(__result, current);
                 AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tilestats").SetValue(null, tstats);
 
@@ -321,8 +572,8 @@ namespace CustomBuildings
 
         public static object GetNewTextureHolder(Texture2D texture)
         {
-            var th = Activator.CreateInstance(Type.GetType("TinyZoo.Utils.TextureHolder, LetsBuildAZoo"), new object[] {});
-            Reflection.SetFieldValue("texture",th, texture);
+            var th = Activator.CreateInstance(Type.GetType("TinyZoo.Utils.TextureHolder, LetsBuildAZoo"), new object[] { });
+            Reflection.SetFieldValue("texture", th, texture);
 
             return th;
         }
@@ -347,7 +598,7 @@ namespace CustomBuildings
       object _LightsTexture = null)
         {
             var b = Enum.Parse(Type.GetType("TinyZoo.Tile_Data.BUILDINGTYPE, LetsBuildAZoo"), GetBuildingString(_buildingtype));
-            var ti = Activator.CreateInstance(Type.GetType("TinyZoo.Tile_Data.TileInfo, LetsBuildAZoo"), new object[] { _BaseRect, b,_HasFullRotation,_Variants,LockToThisRotation,_DrawTexture,_IsRepeatingLargeTexture,TotalRotations, _LightsTexture });
+            var ti = Activator.CreateInstance(Type.GetType("TinyZoo.Tile_Data.TileInfo, LetsBuildAZoo"), new object[] { _BaseRect, b, _HasFullRotation, _Variants, LockToThisRotation, _DrawTexture, _IsRepeatingLargeTexture, TotalRotations, _LightsTexture });
             return ti;
         }
 
@@ -356,7 +607,7 @@ namespace CustomBuildings
             switch (type)
             {
                 case "Floor":
-                        return 0;
+                    return 0;
                 default:
                     return 2;
             }
@@ -364,15 +615,15 @@ namespace CustomBuildings
 
         internal static void AddBuilding(object tiledata, Rectangle baseRect, int rotation, int maxrotations, float X, float Y)
         {
-            AccessTools.Method(tiledata.GetType(), "AddBuilding", new Type[] {typeof(Rectangle),typeof(Vector2),typeof(int),typeof(int)}).Invoke(tiledata, new object[] { baseRect, new Vector2(X,Y), rotation, maxrotations });
+            AccessTools.Method(tiledata.GetType(), "AddBuilding", new Type[] { typeof(Rectangle), typeof(Vector2), typeof(int), typeof(int) }).Invoke(tiledata, new object[] { baseRect, new Vector2(X, Y), rotation, maxrotations });
         }
 
-        internal static void AddRotation(object tiledata,Rectangle baseRect, int rotation)
+        internal static void AddRotation(object tiledata, Rectangle baseRect, int rotation)
         {
             AccessTools.Method(tiledata.GetType(), "AddRotationVariant").Invoke(tiledata, new object[] { baseRect, 1, rotation });
         }
 
-     
+
 
         public static void SetFloorVolumeTileData(TILETYPE type, object textureHolder)
         {
@@ -385,7 +636,7 @@ namespace CustomBuildings
             if (maxrotations > 1)
                 for (int i = 1; i < maxrotations; i++)
                 {
-                    if(definition.BasicBuilding == -1)
+                    if (definition.BasicBuilding == -1)
                         AddRotation(tiledata, new Rectangle(definition.TileWidth * i, 0, definition.TileWidth, definition.TileHeight), i);
                     else
                         AddRotation(tiledata, new Rectangle(definition.TileWidth * i, definition.TileHeight - definition.BasicBuilding, definition.TileWidth, definition.BasicBuilding), i);
@@ -401,71 +652,13 @@ namespace CustomBuildings
             }
         }
 
-        internal static bool GetTileInfo(TILETYPE tiletype, ref object __result)
+        internal static void GetEntriesInThisCategory()
         {
-            Array tinfoCheck = (Array) AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").GetValue(null);
-
-            if (tinfoCheck == null || tinfoCheck.Length < MinimumID * 2)
+            if (!LoadedEntries)
             {
-                var newArray = Array.CreateInstance(Type.GetType("TinyZoo.Tile_Data.TileInfo, LetsBuildAZoo"), MinimumID * 2);
-                
-                if(tinfoCheck != null)
-                for (int i = 0; i < tinfoCheck.Length; i++)
-                    newArray.SetValue(tinfoCheck.GetValue(i), i);
-
-                AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").SetValue(null, newArray);
+                RegisterTileInfos();
+                LoadedEntries = true;
             }
-
-            int current = (int)tiletype;
-
-            if (TryGetBuildingDefinitionFromTileId(current, out BuildingDefinition definition))
-            {
-                Array tinfo = (Array)AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").GetValue(null);
-
-                Texture2D tex = definition.GetPack().Content.LoadContent<Texture2D>(definition.Texture);
-                object texture = GetNewTextureHolder(tex);
-
-                if (definition.BasicBuilding >= 0)
-                {
-                    definition.TileHeight = definition.BasicBuilding;
-                    definition.TileWidth = tex.Width / definition.Rotations;
-                    definition.FrontTileHeight = tex.Height - definition.BasicBuilding;
-                    definition.FrontTileWidth = tex.Width;
-                    definition.BuildingType = "Building";
-                }
-
-                if (definition.BasicBuilding == -1)
-                    __result = GetNewTileInfo(new Rectangle(0, 0, definition.TileWidth, definition.TileHeight), GetBuildingType(definition.BuildingType), false, 1, 0, texture, false, definition.Rotations, null);
-                else
-                    __result = GetNewTileInfo(new Rectangle(0, definition.FrontTileHeight, definition.TileWidth, definition.TileHeight), GetBuildingType(definition.BuildingType), false, 1, 0, texture, false, definition.Rotations, null);
-
-                if (!definition.IsVolumeFloor)
-                {
-                    AddRotations(__result, definition, definition.Rotations);
-                }
-
-                tinfo.SetValue(__result, current);
-                AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").SetValue(null, tinfo);
-
-                if (definition.IsVolumeFloor)
-                {
-                    SetFloorVolumeTileData((TILETYPE)definition.GetTileId(), texture);
-                    tinfo = (Array)AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").GetValue(null);
-                    AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").SetValue(null, tinfo);
-                    __result = tinfo.GetValue(current);
-                }
-
-                return false;
-            }
-
-            return true;
         }
-
-        internal static void GetEntriesInThisCategory(object category, ref List<TILETYPE> __result)
-        {
-            foreach (var building in Buildings.Where(b => b.Category == category.ToString()))
-                if (!__result.Contains((TILETYPE)building.GetTileId()))
-                    __result.Add((TILETYPE)building.GetTileId());
-        }
-   }
+    }
 }
