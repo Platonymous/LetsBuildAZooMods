@@ -25,7 +25,12 @@ namespace CustomBuildings
 
         public int BasicBuilding { get; set; } = -1;
 
-        public bool AllowEnclosure { get; set; } = true;
+        public bool AllowEnclosure { get; set; } = false;
+
+        public int Frames { get; set; } = 1;
+
+
+        public float Framerate { get; set; } = 0.2f;
 
         public string Category { get; set; } = "Decorative";
 

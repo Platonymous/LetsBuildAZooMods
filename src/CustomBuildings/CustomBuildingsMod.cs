@@ -296,14 +296,21 @@ namespace CustomBuildings
                     if (topLayer != null && topLayer.DrawOrigin != null)
                     {
                         topLayer.DrawOrigin.X = 0f;
-                        topLayer.DrawOrigin.Y = topLayer.DrawOrigin.Y / 2f;
+                        topLayer.DrawOrigin.Y = GetYOffsetForMenu(bd);
                     }
                 }
             }
 
         }
 
-        
+
+        public static float GetYOffsetForMenu(BuildingDefinition definition)
+        {
+            return (definition.FrontTileHeight - definition.TileHeight);
+
+        }
+
+
 
         public static void IsThisAPenDecoration(TILETYPE tiletype, ref bool __result)
         {
@@ -422,6 +429,11 @@ namespace CustomBuildings
                 AddRotations(thisinfo, definition, definition.Rotations);
             }
 
+            if(definition.Frames > 1)
+            {
+                AccessTools.Method(thisinfo.GetType(), "SetUpBaseAnimation").Invoke(thisinfo, new object[] { definition.Frames, definition.Framerate });
+            }
+
             tinfo.SetValue(thisinfo, definition.GetTileId());
             AccessTools.Field(Type.GetType("TinyZoo.Tile_Data.TileData, LetsBuildAZoo"), "tileinfo").SetValue(null, tinfo);
 
@@ -461,8 +473,11 @@ namespace CustomBuildings
             int tileid = (int)tiletype;
             if (Buildings.FirstOrDefault(b => b.GetTileId() == tileid) is BuildingDefinition bd)
             {
-                __result = null;
-                return false;
+                if (bd.Frames == 1)
+                {
+                    __result = null;
+                    return false;
+                }
             }
 
             return true;
@@ -646,10 +661,16 @@ namespace CustomBuildings
             {
                 for (int i = 0; i < maxrotations; i++)
                     if (definition.BasicBuilding == -1)
-                        AddBuilding(tiledata, new Rectangle(definition.FrontTileWidth * i, definition.TileHeight, definition.FrontTileWidth, definition.FrontTileHeight), i, maxrotations, (definition.FrontTileWidth / 2f) + 8f, definition.FrontTileHeight - definition.TileHeight / 2);
+                        AddBuilding(tiledata, new Rectangle(definition.FrontTileWidth * i, definition.TileHeight, definition.FrontTileWidth, definition.FrontTileHeight), i, maxrotations, (definition.FrontTileWidth / 2f) + 8f, GetYOffset(definition));
                     else
                         AddBuilding(tiledata, new Rectangle(definition.FrontTileWidth * i, 0, definition.FrontTileWidth, definition.FrontTileHeight), i, maxrotations, (definition.FrontTileWidth / 2f) + 8f, definition.FrontTileHeight - definition.TileHeight / 2);
             }
+        }
+        
+        public static float GetYOffset(BuildingDefinition definition)
+        {
+            float adjustment = - 8f + 8 * (int)(definition.TileHeight / 16);
+            return adjustment - (definition.TileHeight / 2) + definition.FrontTileHeight;
         }
 
         internal static void GetEntriesInThisCategory()
